@@ -183,3 +183,19 @@ JAZZMIN_UI_TWEAKS = {
         "success": "btn-success",
     },
 }
+
+# Reverse proxy (Nginx) + Cloudflare in front — trust the X-Forwarded-Proto
+# header so Django knows the original request was HTTPS.
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+CSRF_TRUSTED_ORIGINS = [
+    o.strip() for o in os.environ.get('CSRF_TRUSTED_ORIGINS', '').split(',') if o.strip()
+]
+
+if not DEBUG:
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_SSL_REDIRECT = env_bool('SECURE_SSL_REDIRECT', False)
+    SECURE_HSTS_SECONDS = int(os.environ.get('SECURE_HSTS_SECONDS', '0'))
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = SECURE_HSTS_SECONDS > 0
+    SECURE_HSTS_PRELOAD = SECURE_HSTS_SECONDS > 0

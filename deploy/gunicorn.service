@@ -1,0 +1,20 @@
+[Unit]
+Description=Gunicorn daemon for niki.danielhavlicek.cz
+After=network.target postgresql.service
+
+[Service]
+User=niki
+Group=www-data
+WorkingDirectory=/home/niki/niki
+EnvironmentFile=/home/niki/niki/.env
+ExecStart=/home/niki/niki/venv/bin/gunicorn \
+    --workers 3 \
+    --bind unix:/run/gunicorn/niki.sock \
+    --access-logfile /home/niki/niki/logs/gunicorn-access.log \
+    --error-logfile /home/niki/niki/logs/gunicorn-error.log \
+    niki.wsgi:application
+RuntimeDirectory=gunicorn
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

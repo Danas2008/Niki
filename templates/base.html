@@ -4,10 +4,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>{% block title %}My{% endblock %}</title>
+<title>{% block title %}Danini Web{% endblock %}</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="{% static 'css/style.css' %}">
+<link rel="stylesheet" href="{% static 'css/style.css' %}?v=8">
+<link rel="icon" type="image/svg+xml" href="{% static 'img/heart-logo.svg' %}">
+<link rel="apple-touch-icon" href="{% static 'img/heart-logo-square.svg' %}">
 <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 {% block extra_head %}{% endblock %}
 </head>
@@ -15,7 +17,7 @@
 {% if user.is_authenticated %}
 <nav class="site-nav" x-data="{ open: false }">
     <div class="nav-inner">
-        <a class="brand" href="{% url 'dashboard' %}"><span aria-hidden="true">&hearts;</span> My</a>
+        <a class="brand" href="{% url 'dashboard' %}"><img src="{% static 'img/heart-logo-gradient.svg' %}" alt="" class="brand-icon"> Danini Web</a>
         <button class="nav-toggle" type="button" @click="open = !open" :aria-expanded="open.toString()" aria-label="Otevřít menu">
             <span></span><span></span><span></span>
         </button>

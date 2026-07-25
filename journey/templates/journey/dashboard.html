@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Journey{% endblock %}
+{% block content %}
+<h1>Our Journey</h1>
+<p class="teaser">Every chapter unlocks in its own time.</p>
+
+<div class="grid">
+{% for chapter in chapters %}
+    {% if chapter.is_unlocked %}
+        <div class="card">
+            <h3>{{ chapter.title }}</h3>
+            {% if chapter.body %}<p>{{ chapter.body }}</p>{% else %}<p class="teaser">{{ chapter.teaser }}</p>{% endif %}
+        </div>
+    {% else %}
+        {% include "_locked_card.html" with teaser=chapter.teaser unlock_date=chapter.unlock_at %}
+    {% endif %}
+{% endfor %}
+</div>
+{% endblock %}

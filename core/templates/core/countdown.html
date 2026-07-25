@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Countdown{% endblock %}
+{% block content %}
+<div class="countdown-big card">
+    <h1>Until we're together again</h1>
+    <div class="digits" id="main-countdown" data-target="{{ main.iso }}">calculating...</div>
+</div>
+
+{% if secondary %}
+<h2>Other milestones</h2>
+<div class="grid">
+{% for m in secondary %}
+    <div class="card">
+        <h3>{{ m.label }}</h3>
+        <div class="digits" style="font-size:1.1rem" data-target="{{ m.iso }}">calculating...</div>
+    </div>
+{% endfor %}
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function formatRemaining(ms) {
+    if (ms <= 0) return "It's here! ❤";
+    const s = Math.floor(ms / 1000);
+    const days = Math.floor(s / 86400);
+    const hours = Math.floor((s % 86400) / 3600);
+    const minutes = Math.floor((s % 3600) / 60);
+    const seconds = s % 60;
+    return `${days}d ${hours}h ${minutes}m ${seconds}s`;
+}
+
+function tick() {
+    document.querySelectorAll('[data-target]').forEach(el => {
+        const target = new Date(el.dataset.target).getTime();
+        const now = Date.now();
+        el.textContent = formatRemaining(target - now);
+    });
+}
+tick();
+setInterval(tick, 1000);
+</script>
+{% endblock %}

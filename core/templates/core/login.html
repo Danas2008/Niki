@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Sign in{% endblock %}
+{% block content %}
+<div class="login-wrap">
+    <h1>Welcome back</h1>
+    <p class="teaser">A little world made just for us.</p>
+    <div class="card">
+        <form method="post">
+            {% csrf_token %}
+            {% if form.errors %}
+                <p class="message error">Wrong username or password. Try again.</p>
+            {% endif %}
+            {{ form.username.label_tag }}
+            {{ form.username }}
+            {{ form.password.label_tag }}
+            {{ form.password }}
+            <button class="btn" type="submit">Sign In</button>
+            <input type="hidden" name="next" value="{{ next }}">
+        </form>
+    </div>
+</div>
+{% endblock %}

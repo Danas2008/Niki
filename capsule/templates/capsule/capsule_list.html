@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Time Capsules{% endblock %}
+{% block content %}
+<h1>Time Capsules</h1>
+<div class="grid">
+{% for capsule in capsules %}
+    {% if capsule.unlocked %}
+        <div class="card">
+            <h3><a href="{% url 'capsule_detail' capsule.pk %}">{{ capsule.title }}</a></h3>
+            {% if capsule.opened %}<p class="teaser">Opened {{ capsule.opened_at|date:"M j, Y" }}</p>{% else %}<p class="teaser">Ready to open</p>{% endif %}
+        </div>
+    {% else %}
+        <div class="card card-locked">
+            <div class="lock-icon">&#128274;</div>
+            <h3>{{ capsule.title }}</h3>
+            {% if capsule.unlock_at %}
+                <p class="unlock-date">Unlocks {{ capsule.unlock_at|date:"F j, Y" }}</p>
+            {% elif capsule.unlock_code %}
+                <p class="teaser">Requires a code</p>
+            {% endif %}
+        </div>
+    {% endif %}
+{% empty %}
+    <p class="teaser">No time capsules yet.</p>
+{% endfor %}
+</div>
+{% endblock %}

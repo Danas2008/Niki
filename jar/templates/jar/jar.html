@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Love Jar{% endblock %}
+{% block content %}
+<h1>The Love Jar</h1>
+
+<div class="card">
+    <h3>Progress: {{ opened_count }} / {{ total }}</h3>
+    <div class="progress-bar-outer">
+        <div class="progress-bar-inner" style="width: {{ percent }}%;"></div>
+    </div>
+    <p>Streak: {{ streak }} day{{ streak|pluralize }} in a row &#128293;</p>
+    {% if celebrate %}
+        <p class="message success">{{ opened_count }} letters opened! Something to celebrate. &#127881;</p>
+    {% endif %}
+</div>
+
+<div class="card">
+    <h3>Have a code?</h3>
+    <form method="post" action="{% url 'jar_redeem' %}">
+        {% csrf_token %}
+        <input type="text" name="code" placeholder="Enter unlock code">
+        <button class="btn" type="submit">Redeem</button>
+    </form>
+</div>
+
+<div class="card" x-data="{}">
+    <h3>Letters</h3>
+    <div class="letter-grid">
+    {% for letter in letters %}
+        {% if letter.unlocked %}
+            <div class="letter-tile {% if letter.letter_state.opened %}opened{% endif %} {% if letter.is_big %}big{% endif %}"
+                 x-data="{opened: {{ letter.letter_state.opened|yesno:'true,false' }} }"
+                 @click="
+                    fetch('{% url 'jar_toggle' letter.number %}', {method:'POST', headers:{'X-CSRFToken': '{{ csrf_token }}'}})
+                    .then(r => r.json())
+                    .then(data => { if (data.ok) { opened = data.opened; $el.classList.toggle('opened', opened); if (opened) fireConfetti(); } });
+                 ">
+                {{ letter.number }}
+            </div>
+        {% else %}
+            <div class="letter-tile locked" title="Locked">{{ letter.number }}</div>
+        {% endif %}
+    {% endfor %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Our Map{% endblock %}
+{% block extra_head %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+{% endblock %}
+{% block content %}
+<h1>Our Map</h1>
+<div id="map"></div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const pins = {{ pins_json|safe }};
+const map = L.map('map').setView([20, 0], 2);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors',
+    maxZoom: 19,
+}).addTo(map);
+
+if (pins.length) {
+    const bounds = [];
+    pins.forEach(pin => {
+        const marker = L.circleMarker([pin.lat, pin.lng], {
+            radius: 9,
+            color: pin.color,
+            fillColor: pin.color,
+            fillOpacity: 0.85,
+        }).addTo(map);
+        marker.bindPopup(`<strong>${pin.title}</strong><br>${pin.description || ''}`);
+        bounds.push([pin.lat, pin.lng]);
+    });
+    map.fitBounds(bounds, { padding: [40, 40] });
+}
+</script>
+{% endblock %}

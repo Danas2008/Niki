@@ -26,6 +26,7 @@ ALLOWED_HOSTS = [h.strip() for h in os.environ.get('ALLOWED_HOSTS', 'localhost,1
 
 
 INSTALLED_APPS = [
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -66,6 +67,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'core.context_processors.jar_status',
             ],
         },
     },
@@ -134,3 +136,50 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'dashboard'
 LOGOUT_REDIRECT_URL = 'login'
+
+
+# Jazzmin admin theme
+JAZZMIN_SETTINGS = {
+    "site_title": "Niki ♥ Admin",
+    "site_header": "Niki ♥",
+    "site_brand": "Niki ♥ Admin",
+    "welcome_sign": "Vítej zpět, spravuj náš svět",
+    "copyright": "Niki & Dan",
+    "search_model": [],
+    "show_sidebar": True,
+    "navigation_expanded": True,
+    "icons": {
+        "auth.user": "fas fa-user",
+        "auth.group": "fas fa-users",
+        "accounts.profile": "fas fa-id-card",
+        "journey.chapter": "fas fa-route",
+        "jar.letter": "fas fa-envelope-open-text",
+        "gallery.photo": "fas fa-images",
+        "lovewall.post": "fas fa-heart",
+        "capsule.capsule": "fas fa-box-archive",
+        "ourmap.pin": "fas fa-map-location-dot",
+    },
+    "default_icon_parents": "fas fa-chevron-circle-right",
+    "default_icon_children": "fas fa-circle",
+    "related_modal_active": True,
+    "custom_css": None,
+    "custom_js": None,
+    "show_ui_builder": False,
+}
+
+JAZZMIN_UI_TWEAKS = {
+    "theme": "flatly",
+    "dark_mode_theme": None,
+    "navbar": "navbar-dark",
+    "no_navbar_border": True,
+    "brand_colour": "navbar-dark",
+    "accent": "accent-danger",
+    "button_classes": {
+        "primary": "btn-danger",
+        "secondary": "btn-secondary",
+        "info": "btn-info",
+        "warning": "btn-warning",
+        "danger": "btn-danger",
+        "success": "btn-success",
+    },
+}

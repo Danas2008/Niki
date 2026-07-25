@@ -1,10 +1,10 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="cs">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>{% block title %}Us{% endblock %}</title>
+<title>{% block title %}My{% endblock %}</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{% static 'css/style.css' %}">
@@ -13,19 +13,25 @@
 </head>
 <body>
 {% if user.is_authenticated %}
-<nav class="site-nav">
+<nav class="site-nav" x-data="{ open: false }">
     <div class="nav-inner">
-        <a class="brand" href="{% url 'dashboard' %}">Us &hearts;</a>
-        <div class="nav-links">
-            <a href="{% url 'dashboard' %}">Journey</a>
-            <a href="{% url 'countdown' %}">Countdown</a>
-            <a href="{% url 'gallery' %}">Gallery</a>
-            <a href="{% url 'jar' %}">Jar</a>
-            <a href="{% url 'lovewall' %}">Love Wall</a>
-            <a href="{% url 'capsule' %}">Capsule</a>
-            <a href="{% url 'map' %}">Map</a>
-            <a href="{% url 'settings' %}">Settings</a>
-            <a href="{% url 'logout' %}">Logout</a>
+        <a class="brand" href="{% url 'dashboard' %}">My &hearts;</a>
+        <button class="nav-toggle" type="button" @click="open = !open" :aria-expanded="open.toString()" aria-label="Otevřít menu">
+            <span></span><span></span><span></span>
+        </button>
+        <div class="nav-links" :class="{ 'nav-links--open': open }" x-cloak>
+            <a href="{% url 'dashboard' %}">Naše cesta</a>
+            <a href="{% url 'countdown' %}">Odpočet</a>
+            <a href="{% url 'gallery' %}">Galerie</a>
+            <a href="{% url 'jar' %}">Sklenice lásky</a>
+            <a href="{% url 'lovewall' %}">Zeď lásky</a>
+            <a href="{% url 'capsule' %}">Časové kapsle</a>
+            <a href="{% url 'map' %}">Naše milníky</a>
+            <a href="{% url 'settings' %}">Nastavení</a>
+            <form method="post" action="{% url 'logout' %}" class="logout-form">
+                {% csrf_token %}
+                <button type="submit">Odhlásit se</button>
+            </form>
         </div>
     </div>
 </nav>

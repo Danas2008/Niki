@@ -14,5 +14,5 @@ def gallery_view(request):
     albums = OrderedDict()
     for photo in photos:
         photo.unlocked = is_unlocked(photo)
-        albums.setdefault(photo.album or "Uncategorized", []).append(photo)
+        albums.setdefault(photo.album or "Nezařazené", []).append(photo)
     return render(request, "gallery/gallery.html", {"albums": albums})

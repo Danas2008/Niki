@@ -1,20 +1,20 @@
 {% extends "base.html" %}
-{% block title %}Sign in{% endblock %}
+{% block title %}Přihlášení{% endblock %}
 {% block content %}
 <div class="login-wrap">
-    <h1>Welcome back</h1>
-    <p class="teaser">A little world made just for us.</p>
+    <h1>Vítej zpátky</h1>
+    <p class="teaser">Malý svět, co patří jen nám.</p>
     <div class="card">
         <form method="post">
             {% csrf_token %}
             {% if form.errors %}
-                <p class="message error">Wrong username or password. Try again.</p>
+                <p class="message error">Špatné jméno nebo heslo. Zkus to znovu.</p>
             {% endif %}
             {{ form.username.label_tag }}
             {{ form.username }}
             {{ form.password.label_tag }}
             {{ form.password }}
-            <button class="btn" type="submit">Sign In</button>
+            <button class="btn" type="submit">Přihlásit se</button>
             <input type="hidden" name="next" value="{{ next }}">
         </form>
     </div>

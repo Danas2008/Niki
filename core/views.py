@@ -12,10 +12,10 @@ def home(request):
 
 
 MILESTONES = [
-    {'key': 'birthday', 'label': "Niki's Birthday", 'date': datetime(2026, 7, 27, 0, 0)},
-    {'key': 'departure', 'label': 'Departure', 'date': datetime(2026, 8, 15, 0, 0)},
-    {'key': 'anniversary', 'label': '1-Year Anniversary', 'date': datetime(2026, 9, 27, 0, 0)},
-    {'key': 'return', 'label': 'Return Home', 'date': datetime(2026, 12, 19, 10, 0)},
+    {'key': 'birthday', 'label': 'Nikiny narozeniny', 'date': datetime(2026, 7, 27, 0, 0)},
+    {'key': 'departure', 'label': 'Odjezd', 'date': datetime(2026, 8, 15, 0, 0)},
+    {'key': 'anniversary', 'label': '1. výročí', 'date': datetime(2026, 9, 27, 0, 0)},
+    {'key': 'return', 'label': 'Návrat domů', 'date': datetime(2026, 12, 19, 10, 0)},
 ]
 
 

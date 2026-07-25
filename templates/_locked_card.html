@@ -5,8 +5,8 @@ Usage: {% include "_locked_card.html" with teaser="???" unlock_date=some_datetim
 <div class="card card-locked">
     <div class="lock-icon">&#128274;</div>
     <h3>???</h3>
-    <p class="teaser">{{ teaser|default:"Something is waiting here..." }}</p>
+    <p class="teaser">{{ teaser|default:"Něco tu na tebe čeká..." }}</p>
     {% if unlock_date %}
-        <p class="unlock-date">Unlocks {{ unlock_date|date:"F j, Y" }}{% if unlock_date.hour or unlock_date.minute %} at {{ unlock_date|date:"H:i" }}{% endif %}</p>
+        <p class="unlock-date">Odemkne se {{ unlock_date|date:"j. E Y" }}{% if unlock_date.hour or unlock_date.minute %} v {{ unlock_date|date:"H:i" }}{% endif %}</p>
     {% endif %}
 </div>

@@ -1,18 +1,18 @@
 {% extends "base.html" %}
-{% block title %}Countdown{% endblock %}
+{% block title %}Odpočet{% endblock %}
 {% block content %}
 <div class="countdown-big card">
-    <h1>Until we're together again</h1>
-    <div class="digits" id="main-countdown" data-target="{{ main.iso }}">calculating...</div>
+    <h1>Než budeme zase spolu</h1>
+    <div class="digits" id="main-countdown" data-target="{{ main.iso }}">počítám...</div>
 </div>
 
 {% if secondary %}
-<h2>Other milestones</h2>
+<h2>Další milníky</h2>
 <div class="grid">
 {% for m in secondary %}
     <div class="card">
         <h3>{{ m.label }}</h3>
-        <div class="digits" style="font-size:1.1rem" data-target="{{ m.iso }}">calculating...</div>
+        <div class="digits" style="font-size:1.1rem" data-target="{{ m.iso }}">počítám...</div>
     </div>
 {% endfor %}
 </div>
@@ -23,7 +23,7 @@
 {% block extra_scripts %}
 <script>
 function formatRemaining(ms) {
-    if (ms <= 0) return "It's here! ❤";
+    if (ms <= 0) return "Už je to tady! ❤";
     const s = Math.floor(ms / 1000);
     const days = Math.floor(s / 86400);
     const hours = Math.floor((s % 86400) / 3600);

@@ -1,9 +1,9 @@
 {% extends "base.html" %}
-{% block title %}Settings{% endblock %}
+{% block title %}Nastavení{% endblock %}
 {% block content %}
-<h1>Settings</h1>
+<h1>Nastavení</h1>
 <div class="card">
-    <h3>Change Password</h3>
+    <h3>Změna hesla</h3>
     <form method="post">
         {% csrf_token %}
         {{ form.old_password.label_tag }}
@@ -12,7 +12,7 @@
         {{ form.new_password1 }}
         {{ form.new_password2.label_tag }}
         {{ form.new_password2 }}
-        <button class="btn" type="submit">Update Password</button>
+        <button class="btn" type="submit">Uložit nové heslo</button>
     </form>
 </div>
 {% endblock %}

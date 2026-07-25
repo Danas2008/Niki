@@ -1,25 +1,25 @@
 {% extends "base.html" %}
-{% block title %}Love Wall{% endblock %}
+{% block title %}Zeď lásky{% endblock %}
 {% block content %}
-<h1>Love Wall</h1>
+<h1>Zeď lásky</h1>
 
 <div class="card">
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        <textarea name="text" rows="3" placeholder="Say something sweet..."></textarea>
+        <textarea name="text" rows="3" placeholder="Napiš něco milého..."></textarea>
         <input type="file" name="image" accept="image/*">
-        <button class="btn" type="submit">Post</button>
+        <button class="btn" type="submit">Přidat vzkaz</button>
     </form>
 </div>
 
 {% for post in posts %}
     <div class="card">
         <strong>{{ post.author.profile.display_name|default:post.author.username }}</strong>
-        <span class="teaser">&middot; {{ post.created_at|date:"M j, Y H:i" }}</span>
+        <span class="teaser">&middot; {{ post.created_at|date:"j. E Y H:i" }}</span>
         {% if post.text %}<p>{{ post.text|linebreaks }}</p>{% endif %}
         {% if post.image %}<img src="{{ post.image.url }}" style="max-width:100%;border-radius:12px;">{% endif %}
     </div>
 {% empty %}
-    <p class="teaser">Nothing here yet — be the first to write something.</p>
+    <p class="teaser">Zatím tu nic není &mdash; buď první, kdo něco napíše.</p>
 {% endfor %}
 {% endblock %}

@@ -1,5 +1,3 @@
-import json
-
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
@@ -7,28 +5,31 @@ from core.unlock import is_unlocked
 
 from .models import MapPin
 
-KIND_COLORS = {
-    "past": "#a8b5d1",
-    "present": "#1e2a4a",
-    "future": "#e8a5a5",
-    "milestone": "#d4af37",
+KIND_LABELS = {
+    "past": "Minulost",
+    "present": "Přítomnost",
+    "future": "Budoucnost",
+    "milestone": "Milník",
+}
+
+KIND_ICONS = {
+    "past": "&#127793;",
+    "present": "&#128140;",
+    "future": "&#10024;",
+    "milestone": "&#127775;",
 }
 
 
 @login_required
 def map_view(request):
-    pins = MapPin.objects.all()
-    pin_data = []
+    pins = MapPin.objects.all().order_by("unlock_at", "id")
+    entries = []
     for pin in pins:
-        if not is_unlocked(pin):
-            continue
-        pin_data.append({
-            "title": pin.title,
-            "lat": pin.lat,
-            "lng": pin.lng,
-            "kind": pin.kind,
-            "description": pin.description,
-            "icon": pin.icon,
-            "color": KIND_COLORS.get(pin.kind, "#1e2a4a"),
+        unlocked = is_unlocked(pin)
+        entries.append({
+            "pin": pin,
+            "unlocked": unlocked,
+            "kind_label": KIND_LABELS.get(pin.kind, pin.kind),
+            "kind_icon": KIND_ICONS.get(pin.kind, "&#128204;"),
         })
-    return render(request, "ourmap/map.html", {"pins_json": json.dumps(pin_data)})
+    return render(request, "ourmap/map.html", {"entries": entries})

@@ -1,9 +1,9 @@
 {% extends "base.html" %}
-{% block title %}Letter #{{ letter.number }}{% endblock %}
+{% block title %}Dopis č. {{ letter.number }}{% endblock %}
 {% block content %}
-<h1>Letter #{{ letter.number }} {% if letter.is_big %}&#9733;{% endif %}</h1>
+<h1>Dopis č. {{ letter.number }} {% if letter.is_big %}&#9733;{% endif %}</h1>
 <div class="card">
     {{ letter.web_content|linebreaks }}
 </div>
-<a class="btn" href="{% url 'jar' %}">Back to the jar</a>
+<a class="btn" href="{% url 'jar' %}">Zpět ke sklenici</a>
 {% endblock %}

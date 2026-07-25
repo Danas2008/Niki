@@ -1,6 +1,6 @@
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseForbidden
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 
 from core.unlock import is_unlocked
@@ -20,7 +20,8 @@ def capsule_list(request):
 def capsule_detail(request, pk):
     capsule = get_object_or_404(TimeCapsule, pk=pk)
     if not is_unlocked(capsule):
-        return HttpResponseForbidden("This time capsule is still sealed.")
+        messages.error(request, "Tahle časová kapsle je ještě zapečetěná. Zkus to znovu později.")
+        return redirect("capsule")
 
     first_open = not capsule.opened
     if first_open:

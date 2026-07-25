@@ -104,11 +104,11 @@ def redeem_code(request):
     unlock_code = UnlockCode.objects.filter(code__iexact=code_value).first()
 
     if not unlock_code:
-        messages.error(request, "That code doesn't match anything... try again.")
+        messages.error(request, "Tenhle kód nikam nesedí... zkus to znovu.")
         return redirect("jar")
 
     if unlock_code.redeemed:
-        messages.info(request, "That code has already been used.")
+        messages.info(request, "Tenhle kód už byl použitý.")
         return redirect("jar")
 
     unlock_code.redeemed = True
@@ -118,6 +118,6 @@ def redeem_code(request):
     if unlock_code.target_type == "chapter" and unlock_code.target_id:
         Chapter.objects.filter(id=unlock_code.target_id).update(manually_unlocked=True)
 
-    messages.success(request, f"Unlocked: {unlock_code.label}!")
+    messages.success(request, f"Odemčeno: {unlock_code.label}!")
     request.session["fire_confetti"] = True
     return redirect("jar")

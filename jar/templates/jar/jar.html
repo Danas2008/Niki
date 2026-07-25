@@ -1,30 +1,30 @@
 {% extends "base.html" %}
-{% block title %}Love Jar{% endblock %}
+{% block title %}Sklenice lásky{% endblock %}
 {% block content %}
-<h1>The Love Jar</h1>
+<h1>Sklenice lásky</h1>
 
 <div class="card">
-    <h3>Progress: {{ opened_count }} / {{ total }}</h3>
+    <h3>Postup: {{ opened_count }} / {{ total }}</h3>
     <div class="progress-bar-outer">
         <div class="progress-bar-inner" style="width: {{ percent }}%;"></div>
     </div>
-    <p>Streak: {{ streak }} day{{ streak|pluralize }} in a row &#128293;</p>
+    <p>Šňůra: {{ streak }} den{{ streak|pluralize:"den,dny,dní" }} v kuse &#128293;</p>
     {% if celebrate %}
-        <p class="message success">{{ opened_count }} letters opened! Something to celebrate. &#127881;</p>
+        <p class="message success">{{ opened_count }} otevřených dopisů! Máme co slavit. &#127881;</p>
     {% endif %}
 </div>
 
 <div class="card">
-    <h3>Have a code?</h3>
+    <h3>Máš kód?</h3>
     <form method="post" action="{% url 'jar_redeem' %}">
         {% csrf_token %}
-        <input type="text" name="code" placeholder="Enter unlock code">
-        <button class="btn" type="submit">Redeem</button>
+        <input type="text" name="code" placeholder="Zadej odemykací kód">
+        <button class="btn" type="submit">Uplatnit</button>
     </form>
 </div>
 
 <div class="card" x-data="{}">
-    <h3>Letters</h3>
+    <h3>Dopisy</h3>
     <div class="letter-grid">
     {% for letter in letters %}
         {% if letter.unlocked %}
@@ -38,7 +38,7 @@
                 {{ letter.number }}
             </div>
         {% else %}
-            <div class="letter-tile locked" title="Locked">{{ letter.number }}</div>
+            <div class="letter-tile locked" title="Uzamčeno">{{ letter.number }}</div>
         {% endif %}
     {% endfor %}
     </div>

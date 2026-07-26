@@ -124,7 +124,10 @@ STORAGES = {
         "BACKEND": "django.core.files.storage.FileSystemStorage",
     },
     "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        # Non-manifest variant: still gzips assets, but doesn't hard-fail
+        # when a referenced static path (e.g. Jazzmin's bootswatch theme
+        # reference) has no exact manifest entry.
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
     },
 }
 

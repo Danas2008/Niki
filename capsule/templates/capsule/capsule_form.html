@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Nová kapsle{% endblock %}
+{% block content %}
+<h1>Napsat časovou kapsli</h1>
+<p class="teaser">Napiš vzkaz a rozhodni, kdy se má otevřít. Až ho uložíš, kapsle se zapečetí a nikdo ji neuvidí dřív.</p>
+
+<div class="card" x-data="{ choice: 'home' }">
+    <form method="post">
+        {% csrf_token %}
+        <label for="id_title">Název</label>
+        <input type="text" id="id_title" name="title" value="{{ title|default:'' }}" maxlength="200" required>
+
+        <label for="id_body">Vzkaz</label>
+        <textarea id="id_body" name="body" rows="6" required>{{ body|default:'' }}</textarea>
+
+        <label>Kdy se má otevřít?</label>
+        <div class="capsule-unlock-choice">
+            <label class="capsule-radio">
+                <input type="radio" name="unlock_choice" value="home" x-model="choice" checked>
+                Až budu doma (20. 12. 2026)
+            </label>
+            <label class="capsule-radio">
+                <input type="radio" name="unlock_choice" value="custom" x-model="choice">
+                Ve vlastní datum
+            </label>
+        </div>
+
+        <div x-show="choice === 'custom'" x-cloak class="capsule-date-fields">
+            <label for="id_unlock_date">Datum</label>
+            <input type="date" id="id_unlock_date" name="unlock_date">
+            <label for="id_unlock_time">Čas</label>
+            <input type="time" id="id_unlock_time" name="unlock_time" value="00:00">
+        </div>
+
+        <button class="btn" type="submit">Zapečetit kapsli</button>
+    </form>
+</div>
+
+<a class="btn" href="{% url 'capsule' %}" style="background:none;color:var(--plum-soft);box-shadow:none;">Zpět na kapsle</a>
+{% endblock %}

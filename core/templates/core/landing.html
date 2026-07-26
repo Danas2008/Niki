@@ -8,7 +8,16 @@
 </p>
 {% endif %}
 
-<div class="landing-stepper" x-data="{ step: 0, total: {{ slides|length }} }">
+<div x-data="{ letterOpened: false, step: 0, total: {{ slides|length }} }">
+
+<div class="birthday-reveal" x-show="!letterOpened">
+    <button type="button" class="birthday-envelope landing-tap-envelope" @click="letterOpened = true" aria-label="Otevřít dopis">
+        <span class="envelope-seal birthday-seal">&#10084;</span>
+    </button>
+    <p class="teaser" style="margin-top:1rem;">Klepni na dopis</p>
+</div>
+
+<div class="landing-stepper" x-show="letterOpened" x-cloak>
     {% for slide in slides %}
     <div class="card landing-slide" x-show="step === {{ forloop.counter0 }}" x-cloak>
         {% if builder_mode %}
@@ -37,5 +46,7 @@
         <button type="button" class="btn" x-show="step < total - 1" @click="step++" x-cloak>Další</button>
         <a class="btn" href="{% url 'dashboard' %}" x-show="step >= total - 1" x-cloak>Vstoupit &#10024;</a>
     </div>
+</div>
+
 </div>
 {% endblock %}

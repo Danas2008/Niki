@@ -731,4 +731,85 @@ input[type=file] {
     padding: 0.2rem 0.75rem;
     margin-bottom: 0.6rem;
 }
+
+.landing-tap-envelope {
+    cursor: pointer;
+    padding: 0;
+    animation: birthday-pulse 2.2s ease-in-out infinite;
+}
+.landing-tap-envelope:hover { transform: scale(1.03); }
 .birthday-letter .btn { margin-top: 1rem; }
+
+/* ---------- Capsule creation form ---------- */
+.capsule-unlock-choice {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin: 0 0 1rem;
+}
+.capsule-radio {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 500;
+    font-size: 0.95rem;
+    cursor: pointer;
+}
+.capsule-radio input { width: auto; margin: 0; }
+.capsule-date-fields {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+}
+.capsule-date-fields input { width: auto; margin-bottom: 0; }
+
+/* ---------- Milestones connected path ---------- */
+.path {
+    max-width: 640px;
+    margin: 0 auto;
+}
+
+.path-point {
+    display: flex;
+    gap: 1.1rem;
+    align-items: stretch;
+}
+
+.path-line-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 0 0 auto;
+}
+
+.path-dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--plum);
+    border: 3px solid var(--ivory);
+    box-shadow: 0 0 0 2px rgba(74,47,61,0.18);
+    margin-top: 0.4rem;
+    flex-shrink: 0;
+}
+.path-dot--past { background: #c9b3bb; }
+.path-dot--present { background: var(--rose-deep); box-shadow: 0 0 0 4px rgba(176,107,120,0.25); }
+.path-dot--future { background: var(--rose); }
+.path-dot--milestone { background: var(--gold); }
+
+.path-line {
+    width: 3px;
+    flex: 1 1 auto;
+    background: linear-gradient(180deg, rgba(176,107,120,0.35), rgba(201,162,75,0.35));
+    margin: 0.15rem 0;
+    border-radius: 999px;
+    min-height: 2.25rem;
+}
+
+.path-card {
+    flex: 1 1 auto;
+    margin-bottom: 1.4rem;
+    min-width: 0;
+}
+.path-card .card { margin-bottom: 0; }

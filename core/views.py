@@ -8,13 +8,34 @@ from django.shortcuts import redirect, render
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 
-from .models import LandingSlide
+from .models import LandingSlide, TextBlock
 
 
 def home(request):
     if request.user.is_authenticated:
         return redirect('landing')
     return redirect('login')
+
+
+BIRTHDAY_DEFAULT_TITLE = "Všechno nejlepší, Niki! 🎉"
+BIRTHDAY_DEFAULT_CONTENT = (
+    "Tohle je jen malé zastavení na tvůj den — na další překvapení se "
+    "můžeš těšit, až se sama odemknou, ve svůj čas.\n\n"
+    "Do té doby si užij svůj den. Miluju tě."
+)
+
+
+@login_required
+def birthday_page(request):
+    letter, _ = TextBlock.objects.get_or_create(
+        key="birthday_page",
+        defaults={
+            "label": "Stránka k narozeninám (/birthday/)",
+            "title": BIRTHDAY_DEFAULT_TITLE,
+            "content": BIRTHDAY_DEFAULT_CONTENT,
+        },
+    )
+    return render(request, "core/birthday.html", {"letter": letter})
 
 
 @login_required

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Všechno nejlepší{% endblock %}
+{% block content %}
+
+<div class="birthday-reveal" x-data="{ opened: false }" x-init="setTimeout(() => opened = true, 700)">
+    <div class="birthday-envelope" :class="{ 'is-open': opened }" x-cloak>
+        <div class="envelope-seal birthday-seal">&#10084;</div>
+    </div>
+
+    <div class="card birthday-letter" x-show="opened" x-transition:enter.duration.700ms x-cloak>
+        {% if builder_mode %}
+            <h1 data-edit="core.textblock:{{ letter.id }}:title">{{ letter.title }}</h1>
+            <p data-edit="core.textblock:{{ letter.id }}:content" data-edit-multiline="true">{{ letter.content }}</p>
+        {% else %}
+            <h1>{{ letter.title }}</h1>
+            {{ letter.content|linebreaks }}
+        {% endif %}
+        <a class="btn" href="{% url 'dashboard' %}">Zpět na naši cestu</a>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', () => setTimeout(() => fireConfetti(), 650));
+</script>
+{% endblock %}

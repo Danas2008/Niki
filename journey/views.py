@@ -1,5 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
+from django.utils import timezone
 
 from core.models import TextBlock
 
@@ -18,6 +19,13 @@ DEFAULT_INTRO = (
 @login_required
 def dashboard(request):
     chapters = Chapter.objects.all().order_by("order")
+    today = timezone.localdate()
+    for chapter in chapters:
+        chapter.is_today = bool(
+            chapter.key == "birthday"
+            and chapter.unlock_at
+            and timezone.localtime(chapter.unlock_at).date() == today
+        )
     intro, _ = TextBlock.objects.get_or_create(
         key="dashboard_intro",
         defaults={

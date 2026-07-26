@@ -21,15 +21,19 @@
 <div class="grid">
 {% for chapter in chapters %}
     {% if chapter.is_unlocked or builder_mode %}
-        <div class="card">
+        <div class="card {% if chapter.is_today %}card-celebrate{% endif %}">
             {% if builder_mode %}
                 <h3 data-edit="journey.chapter:{{ chapter.id }}:title">{{ chapter.title }}</h3>
                 <p data-edit="journey.chapter:{{ chapter.id }}:teaser" data-edit-multiline="true">{{ chapter.teaser }}</p>
                 <p data-edit="journey.chapter:{{ chapter.id }}:body" data-edit-multiline="true">{{ chapter.body }}</p>
                 {% if not chapter.is_unlocked %}<p class="unlock-date">&#128274; Zamčeno do {{ chapter.unlock_at|date:"j. E Y" }}</p>{% endif %}
             {% else %}
+                {% if chapter.is_today %}<div class="celebrate-badge">&#127881; Dnes! &#127881;</div>{% endif %}
                 <h3>{{ chapter.title }}</h3>
                 {% if chapter.body %}<p>{{ chapter.body }}</p>{% else %}<p class="teaser">{{ chapter.teaser }}</p>{% endif %}
+            {% endif %}
+            {% if chapter.key == "birthday" and chapter.is_unlocked %}
+                <a class="btn" href="{% url 'birthday' %}">Všechno nejlepší</a>
             {% endif %}
         </div>
     {% else %}

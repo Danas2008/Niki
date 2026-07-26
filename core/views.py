@@ -91,10 +91,14 @@ def builder_save_field(request):
 
 MILESTONES = [
     {'key': 'birthday', 'label': 'Nikiny narozeniny', 'date': datetime(2026, 7, 27, 0, 0)},
-    {'key': 'departure', 'label': 'Odjezd', 'date': datetime(2026, 8, 15, 0, 0)},
+    {'key': 'departure', 'label': 'Odlet :(', 'date': datetime(2026, 8, 15, 8, 0)},
     {'key': 'anniversary', 'label': '1. výročí', 'date': datetime(2026, 9, 27, 0, 0)},
     {'key': 'return', 'label': 'Návrat domů', 'date': datetime(2026, 12, 19, 10, 0)},
 ]
+
+# The big countdown counts down to whichever of these hasn't happened yet,
+# in order: departure first, then (once he's actually left) the return.
+MAIN_COUNTDOWN_ORDER = ['departure', 'return']
 
 
 @login_required
@@ -110,6 +114,7 @@ def countdown(request):
             'iso': aware_dt.isoformat(),
             'passed': aware_dt <= now,
         })
-    main = next(m for m in milestones if m['key'] == 'return')
-    secondary = [m for m in milestones if m['key'] != 'return' and not m['passed']]
+    by_key = {m['key']: m for m in milestones}
+    main = next((by_key[k] for k in MAIN_COUNTDOWN_ORDER if not by_key[k]['passed']), by_key['return'])
+    secondary = [m for m in milestones if m['key'] != main['key'] and not m['passed']]
     return render(request, 'core/countdown.html', {'main': main, 'secondary': secondary})

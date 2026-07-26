@@ -3,17 +3,13 @@
 {% block content %}
 
 <div class="card intro-card">
-    <h1>Ahoj, lásko &hearts;</h1>
-    <p>
-        Tohle je náš společný prostor &mdash; místo, který jsem pro nás postavil,
-        abychom měli kousek sebe navzájem, i když jsme zrovna daleko od sebe.
-        Najdeš tu naši společnou cestu, vzpomínky, dopisy a pár překvapení,
-        která se postupně odemykají v čase.
-    </p>
-    <p>
-        Ať jsi zrovna kdekoliv, doufám, že ti tenhle koutek internetu přinese
-        úsměv na tváři. Miluju tě.
-    </p>
+    {% if builder_mode %}
+        <h1 data-edit="core.textblock:{{ intro.id }}:title">{{ intro.title }}</h1>
+        <p data-edit="core.textblock:{{ intro.id }}:content" data-edit-multiline="true">{{ intro.content }}</p>
+    {% else %}
+        <h1>{{ intro.title }}</h1>
+        {{ intro.content|linebreaks }}
+    {% endif %}
 </div>
 <h2>Naše cesta</h2>
 <p class="teaser">Každá kapitola se odemkne ve svůj čas.</p>

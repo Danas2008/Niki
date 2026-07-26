@@ -35,6 +35,7 @@ BUILDER_EDITABLE_FIELDS = {
     'gallery.galleryphoto': {'caption'},
     'jar.letter': {'web_content'},
     'lovewall.lovewallpost': {'text'},
+    'core.textblock': {'title', 'content'},
 }
 
 

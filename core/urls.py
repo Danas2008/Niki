@@ -5,6 +5,7 @@ from . import views
 
 urlpatterns = [
     path('', views.home, name='home'),
+    path('welcome/', views.landing, name='landing'),
     path('login/', auth_views.LoginView.as_view(
         template_name='core/login.html',
         redirect_authenticated_user=True,

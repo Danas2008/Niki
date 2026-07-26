@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Vítej{% endblock %}
+{% block content %}
+
+{% if builder_mode %}
+<p class="teaser" style="margin-bottom:1rem;">
+    &#9998; Builder mode: klikni na nadpis nebo text kterékoliv karty a napiš obsah. Prázdné karty Niki neuvidí, dokud je nevyplníš.
+</p>
+{% endif %}
+
+<div class="landing-stepper" x-data="{ step: 0, total: {{ slides|length }} }">
+    {% for slide in slides %}
+    <div class="card landing-slide" x-show="step === {{ forloop.counter0 }}" x-cloak>
+        {% if builder_mode %}
+            <h1 data-edit="core.landingslide:{{ slide.id }}:title">{{ slide.title }}</h1>
+            <p data-edit="core.landingslide:{{ slide.id }}:content" data-edit-multiline="true">{{ slide.content }}</p>
+            {% if not slide.is_written %}<p class="unlock-date">Zatím prázdné &mdash; napiš sem text</p>{% endif %}
+        {% else %}
+            <h1>{{ slide.title }}</h1>
+            {{ slide.content|linebreaks }}
+        {% endif %}
+    </div>
+    {% empty %}
+    <div class="card landing-slide">
+        <h1>Vítej &hearts;</h1>
+    </div>
+    {% endfor %}
+
+    <div class="landing-nav">
+        <template x-for="i in total" :key="i">
+            <span class="landing-dot" :class="{ 'is-active': step === i - 1 }"></span>
+        </template>
+    </div>
+
+    <div class="landing-actions">
+        <button type="button" class="btn" x-show="step > 0" @click="step--" x-cloak>Zpět</button>
+        <button type="button" class="btn" x-show="step < total - 1" @click="step++" x-cloak>Další</button>
+        <a class="btn" href="{% url 'dashboard' %}" x-show="step >= total - 1" x-cloak>Vstoupit &#10024;</a>
+    </div>
+</div>
+{% endblock %}

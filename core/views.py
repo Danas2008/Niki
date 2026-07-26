@@ -8,11 +8,28 @@ from django.shortcuts import redirect, render
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 
+from .models import LandingSlide
+
 
 def home(request):
     if request.user.is_authenticated:
-        return redirect('dashboard')
+        return redirect('landing')
     return redirect('login')
+
+
+@login_required
+def landing(request):
+    if LandingSlide.objects.count() < 5:
+        LandingSlide.objects.get_or_create(order=1, defaults={"title": "Vítej, tohle je Danini Web"})
+        for n in range(2, 6):
+            LandingSlide.objects.get_or_create(order=n)
+
+    builder_mode = request.user.is_staff and request.session.get('builder_mode', False)
+    slides = list(LandingSlide.objects.all())
+    if not builder_mode:
+        slides = [s for s in slides if s.is_written]
+
+    return render(request, 'core/landing.html', {'slides': slides})
 
 
 @login_required
@@ -36,6 +53,7 @@ BUILDER_EDITABLE_FIELDS = {
     'jar.letter': {'web_content'},
     'lovewall.lovewallpost': {'text'},
     'core.textblock': {'title', 'content'},
+    'core.landingslide': {'title', 'content'},
 }
 
 

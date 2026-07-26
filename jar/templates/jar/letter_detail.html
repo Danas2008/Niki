@@ -2,8 +2,15 @@
 {% block title %}Dopis č. {{ letter.number }}{% endblock %}
 {% block content %}
 <h1>Dopis č. {{ letter.number }} {% if letter.is_big %}&#9733;{% endif %}</h1>
-<div class="card">
-    {{ letter.web_content|linebreaks }}
-</div>
+{% if builder_mode %}
+    {% if not letter_unlocked %}<p class="unlock-date">&#128274; Zamčeno do {{ letter.available_at|date:"j. E Y" }} &mdash; toto je náhled</p>{% endif %}
+    <div class="card">
+        <p data-edit="jar.letter:{{ letter.id }}:web_content" data-edit-multiline="true">{{ letter.web_content }}</p>
+    </div>
+{% else %}
+    <div class="card">
+        {{ letter.web_content|linebreaks }}
+    </div>
+{% endif %}
 <a class="btn" href="{% url 'jar' %}">Zpět ke sklenici</a>
 {% endblock %}

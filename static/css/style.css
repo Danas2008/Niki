@@ -550,3 +550,72 @@ input[type=file] {
 @media (min-width: 601px) {
     .nav-links { display: flex !important; }
 }
+
+/* ---------- Builder mode ---------- */
+.builder-toggle-form { margin: 0 0 0 0.25rem; display: inline-flex; }
+.builder-toggle-btn {
+    background: rgba(201,162,75,0.14);
+    border: 1px solid rgba(201,162,75,0.4);
+    font: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--gold);
+    cursor: pointer;
+    padding: 0.35rem 0.75rem;
+    border-radius: 999px;
+    transition: background 0.18s var(--ease), color 0.18s var(--ease);
+}
+.builder-toggle-btn:hover { background: rgba(201,162,75,0.24); }
+.builder-toggle-btn.is-on { background: var(--gold); border-color: var(--gold); color: #fff; }
+
+.builder-banner {
+    background: linear-gradient(90deg, var(--gold-soft), var(--gold));
+    color: #4a2f0d;
+    text-align: center;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+}
+
+.builder-editable {
+    outline: 1.5px dashed rgba(201,162,75,0.5);
+    outline-offset: 3px;
+    border-radius: 6px;
+    cursor: text;
+    transition: background 0.2s var(--ease), outline-color 0.2s var(--ease);
+}
+.builder-editable:hover { background: rgba(201,162,75,0.08); }
+.builder-editable:focus { outline: 2px solid var(--gold); background: rgba(201,162,75,0.12); }
+.builder-editable.builder-saved { outline: 2px solid #4caf6f; background: rgba(76,175,111,0.12); }
+.builder-editable.builder-error { outline: 2px solid #c94848; background: rgba(201,72,72,0.1); }
+
+.builder-add-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--gold);
+    border: 1.5px dashed rgba(201,162,75,0.5);
+    border-radius: 999px;
+    padding: 0.5rem 1rem;
+    margin: 0.5rem 0 1rem;
+}
+.builder-add-link:hover { background: rgba(201,162,75,0.1); text-decoration: none; }
+
+.builder-photo-edit {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    background: rgba(74,47,61,0.75);
+    color: #fff;
+    border-radius: 50%;
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    font-size: 0.95rem;
+}
+.builder-photo-edit:hover { background: var(--gold); }

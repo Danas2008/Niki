@@ -92,9 +92,11 @@ def toggle_letter(request, number):
 @login_required
 def letter_detail(request, number):
     letter = get_object_or_404(Letter, number=number)
-    if not is_unlocked(letter):
+    unlocked = is_unlocked(letter)
+    builder_preview = request.user.is_staff and request.session.get("builder_mode", False)
+    if not unlocked and not builder_preview:
         raise Http404
-    return render(request, "jar/letter_detail.html", {"letter": letter})
+    return render(request, "jar/letter_detail.html", {"letter": letter, "letter_unlocked": unlocked})
 
 
 @login_required

@@ -2,14 +2,25 @@
 {% block title %}Galerie{% endblock %}
 {% block content %}
 <h1>Galerie</h1>
+{% if builder_mode %}
+<a class="builder-add-link" href="/admin/gallery/galleryphoto/add/">&#10133; Přidat fotku</a>
+{% endif %}
 {% for album, photos in albums.items %}
     <h2>{{ album }}</h2>
     <div class="grid">
     {% for photo in photos %}
-        {% if photo.unlocked %}
-            <div class="card gallery-tile">
+        {% if photo.unlocked or builder_mode %}
+            <div class="card gallery-tile" style="position:relative;">
+                {% if builder_mode %}
+                    <a class="builder-photo-edit" href="/admin/gallery/galleryphoto/{{ photo.id }}/change/" title="Vyměnit fotku">&#9998;</a>
+                {% endif %}
                 <img src="{{ photo.image.url }}" alt="{{ photo.caption }}">
-                {% if photo.caption %}<p>{{ photo.caption }}</p>{% endif %}
+                {% if builder_mode %}
+                    <p data-edit="gallery.galleryphoto:{{ photo.id }}:caption" data-edit-multiline="true">{{ photo.caption }}</p>
+                    {% if not photo.unlocked %}<p class="unlock-date">&#128274; Zamčeno do {{ photo.unlock_at|date:"j. E Y" }}</p>{% endif %}
+                {% elif photo.caption %}
+                    <p>{{ photo.caption }}</p>
+                {% endif %}
             </div>
         {% else %}
             {% include "_locked_card.html" with teaser="Vzpomínka, co ještě čeká na odhalení..." unlock_date=photo.unlock_at %}

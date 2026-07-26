@@ -7,7 +7,7 @@
 <title>{% block title %}Danini Web{% endblock %}</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="{% static 'css/style.css' %}?v=8">
+<link rel="stylesheet" href="{% static 'css/style.css' %}?v=9">
 <link rel="icon" type="image/svg+xml" href="{% static 'img/heart-logo.svg' %}">
 <link rel="apple-touch-icon" href="{% static 'img/heart-logo-square.svg' %}">
 <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
@@ -34,9 +34,21 @@
                 {% csrf_token %}
                 <button type="submit">Odhlásit se</button>
             </form>
+            {% if can_build %}
+            <form method="post" action="{% url 'builder_toggle' %}" class="builder-toggle-form">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.path }}">
+                <button type="submit" class="builder-toggle-btn {% if builder_mode %}is-on{% endif %}">
+                    {% if builder_mode %}&#9998; Builder{% else %}&#128065; Náhled{% endif %}
+                </button>
+            </form>
+            {% endif %}
         </div>
     </div>
 </nav>
+{% if builder_mode %}
+<div class="builder-banner">&#9998; Builder mode &mdash; klikni na text a uprav ho. Toto Niki nevidí.</div>
+{% endif %}
 {% endif %}
 
 <main class="page-container">
@@ -52,6 +64,7 @@
 
 <canvas id="confetti-canvas" style="position:fixed;inset:0;pointer-events:none;z-index:9999;"></canvas>
 <script src="{% static 'js/confetti.js' %}"></script>
+{% if builder_mode %}<script src="{% static 'js/builder.js' %}"></script>{% endif %}
 {% block extra_scripts %}{% endblock %}
 </body>
 </html>

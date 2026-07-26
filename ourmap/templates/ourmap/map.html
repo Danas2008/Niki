@@ -6,12 +6,18 @@
 
 <div class="timeline-strip">
 {% for entry in entries %}
-    {% if entry.unlocked %}
+    {% if entry.unlocked or builder_mode %}
         <div class="card timeline-card timeline-card--{{ entry.pin.kind }}">
             <div class="timeline-kind">{{ entry.kind_icon|safe }} <span>{{ entry.kind_label }}</span></div>
-            <h3>{{ entry.pin.title }}</h3>
-            {% if entry.pin.description %}<p>{{ entry.pin.description }}</p>{% endif %}
-            {% if entry.pin.unlock_at %}<p class="unlock-date">{{ entry.pin.unlock_at|date:"j. E Y" }}</p>{% endif %}
+            {% if builder_mode %}
+                <h3 data-edit="ourmap.mappin:{{ entry.pin.id }}:title">{{ entry.pin.title }}</h3>
+                <p data-edit="ourmap.mappin:{{ entry.pin.id }}:description" data-edit-multiline="true">{{ entry.pin.description }}</p>
+                {% if not entry.unlocked %}<p class="unlock-date">&#128274; Zamčeno do {{ entry.pin.unlock_at|date:"j. E Y" }}</p>{% endif %}
+            {% else %}
+                <h3>{{ entry.pin.title }}</h3>
+                {% if entry.pin.description %}<p>{{ entry.pin.description }}</p>{% endif %}
+                {% if entry.pin.unlock_at %}<p class="unlock-date">{{ entry.pin.unlock_at|date:"j. E Y" }}</p>{% endif %}
+            {% endif %}
         </div>
     {% else %}
         <div class="timeline-card-wrap">
@@ -22,4 +28,7 @@
     <p class="teaser">Zatím tu nejsou žádné milníky.</p>
 {% endfor %}
 </div>
+{% if builder_mode %}
+<a class="builder-add-link" href="/admin/ourmap/mappin/add/">&#10133; Přidat milník</a>
+{% endif %}
 {% endblock %}

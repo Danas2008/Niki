@@ -1,10 +1,18 @@
 {% extends "base.html" %}
 {% block title %}{{ capsule.title }}{% endblock %}
 {% block content %}
-<h1>{{ capsule.title }}</h1>
-<div class="card">
-    {{ capsule.body|linebreaks }}
-</div>
+{% if builder_mode %}
+    <h1 data-edit="capsule.timecapsule:{{ capsule.id }}:title">{{ capsule.title }}</h1>
+    {% if not capsule_unlocked %}<p class="unlock-date">&#128274; Zamčeno &mdash; toto je náhled</p>{% endif %}
+    <div class="card">
+        <p data-edit="capsule.timecapsule:{{ capsule.id }}:body" data-edit-multiline="true">{{ capsule.body }}</p>
+    </div>
+{% else %}
+    <h1>{{ capsule.title }}</h1>
+    <div class="card">
+        {{ capsule.body|linebreaks }}
+    </div>
+{% endif %}
 <a class="btn" href="{% url 'capsule' %}">Zpět na kapsle</a>
 {% endblock %}
 

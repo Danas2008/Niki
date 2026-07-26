@@ -18,4 +18,6 @@ urlpatterns = [
     path('settings/done/', auth_views.PasswordChangeDoneView.as_view(
         template_name='core/settings_done.html',
     ), name='password_change_done'),
+    path('builder/toggle/', views.builder_toggle, name='builder_toggle'),
+    path('builder/save-field/', views.builder_save_field, name='builder_save_field'),
 ]

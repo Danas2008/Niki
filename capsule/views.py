@@ -19,14 +19,23 @@ def capsule_list(request):
 @login_required
 def capsule_detail(request, pk):
     capsule = get_object_or_404(TimeCapsule, pk=pk)
-    if not is_unlocked(capsule):
+    builder_preview = request.user.is_staff and request.session.get("builder_mode", False)
+    unlocked = is_unlocked(capsule)
+
+    if not unlocked and not builder_preview:
         messages.error(request, "Tahle časová kapsle je ještě zapečetěná. Zkus to znovu později.")
         return redirect("capsule")
 
-    first_open = not capsule.opened
-    if first_open:
-        capsule.opened = True
-        capsule.opened_at = timezone.now()
-        capsule.save()
+    first_open = False
+    if unlocked and not builder_preview:
+        first_open = not capsule.opened
+        if first_open:
+            capsule.opened = True
+            capsule.opened_at = timezone.now()
+            capsule.save()
 
-    return render(request, "capsule/capsule_detail.html", {"capsule": capsule, "first_open": first_open})
+    return render(request, "capsule/capsule_detail.html", {
+        "capsule": capsule,
+        "first_open": first_open,
+        "capsule_unlocked": unlocked,
+    })

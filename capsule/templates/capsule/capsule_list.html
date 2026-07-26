@@ -2,13 +2,17 @@
 {% block title %}Time Capsule{% endblock %}
 {% block content %}
 <h1>Time Capsule</h1>
+{% if builder_mode %}
+<a class="builder-add-link" href="/admin/capsule/timecapsule/add/">&#10133; Přidat kapsli</a>
+{% endif %}
 {% if capsules %}
 <div class="grid">
 {% for capsule in capsules %}
-    {% if capsule.unlocked %}
+    {% if capsule.unlocked or builder_mode %}
         <div class="card">
             <h3><a href="{% url 'capsule_detail' capsule.pk %}">{{ capsule.title }}</a></h3>
             {% if capsule.opened %}<p class="teaser">Otevřeno {{ capsule.opened_at|date:"j. E Y" }}</p>{% else %}<p class="teaser">Připraveno k otevření</p>{% endif %}
+            {% if builder_mode and not capsule.unlocked %}<p class="unlock-date">&#128274; Zamčeno do {{ capsule.unlock_at|date:"j. E Y" }}</p>{% endif %}
         </div>
     {% else %}
         <div class="card card-locked">

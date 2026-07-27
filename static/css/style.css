@@ -761,6 +761,18 @@ input[type=file] {
 .landing-tap-envelope:hover { transform: scale(1.03); }
 .birthday-letter .btn { margin-top: 1rem; }
 
+.landing-tap-label {
+    display: block;
+    text-align: center;
+    margin: 1.25rem auto 0;
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 700;
+    font-size: 1.4rem;
+    color: var(--rose-deep);
+    letter-spacing: 0.02em;
+}
+
 /* ---------- Capsule creation form ---------- */
 .capsule-unlock-choice {
     display: flex;

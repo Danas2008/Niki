@@ -380,6 +380,27 @@ input[type=file] {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
     gap: 1.25rem;
+    align-items: stretch;
+}
+
+/* Equal-height cards with the trailing button/unlock-date pinned to the
+   bottom, so cards of different content length still align symmetrically. */
+.grid > .card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+.grid > .card > .btn {
+    margin-top: auto;
+    align-self: flex-start;
+}
+.grid > .card.card-locked > .unlock-date {
+    margin-top: auto;
+    align-self: center;
+}
+.grid > .card:not(.card-locked) > .unlock-date {
+    margin-top: auto;
+    align-self: flex-start;
 }
 
 .progress-bar-outer {

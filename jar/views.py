@@ -93,13 +93,39 @@ def toggle_letter(request, number):
 
 
 @login_required
+@require_POST
+def redeem_letter_code(request, number):
+    letter = get_object_or_404(Letter, number=number)
+    if not letter.has_code or not is_unlocked(letter):
+        return JsonResponse({"ok": False, "error": "not applicable"}, status=400)
+
+    code_value = request.POST.get("code", "").strip()
+    if not code_value or code_value.lower() != letter.unlock_code.strip().lower():
+        return JsonResponse({"ok": False, "error": "wrong code"}, status=400)
+
+    state, _ = LetterState.objects.get_or_create(letter=letter)
+    if not state.code_unlocked:
+        state.code_unlocked = True
+        state.code_unlocked_at = timezone.now()
+        state.save()
+
+    return JsonResponse({"ok": True, "challenge_content": letter.challenge_content})
+
+
+@login_required
 def letter_detail(request, number):
     letter = get_object_or_404(Letter, number=number)
     unlocked = is_unlocked(letter)
     builder_preview = request.user.is_staff and request.session.get("builder_mode", False)
     if not unlocked and not builder_preview:
         raise Http404
-    return render(request, "jar/letter_detail.html", {"letter": letter, "letter_unlocked": unlocked})
+
+    state, _ = LetterState.objects.get_or_create(letter=letter)
+    return render(request, "jar/letter_detail.html", {
+        "letter": letter,
+        "letter_unlocked": unlocked,
+        "letter_state": state,
+    })
 
 
 @login_required

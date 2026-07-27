@@ -13,8 +13,8 @@ class LetterAdmin(admin.ModelAdmin):
 
 @admin.register(LetterState)
 class LetterStateAdmin(admin.ModelAdmin):
-    list_display = ("letter", "opened", "opened_at", "mood")
-    list_filter = ("opened", "mood")
+    list_display = ("letter", "opened", "opened_at", "code_unlocked", "mood")
+    list_filter = ("opened", "code_unlocked", "mood")
     search_fields = ("letter__number", "note")
 
 

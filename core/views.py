@@ -71,7 +71,7 @@ BUILDER_EDITABLE_FIELDS = {
     'ourmap.mappin': {'title', 'description'},
     'capsule.timecapsule': {'title', 'body'},
     'gallery.galleryphoto': {'caption'},
-    'jar.letter': {'web_content'},
+    'jar.letter': {'web_content', 'challenge_content'},
     'lovewall.lovewallpost': {'text'},
     'core.textblock': {'title', 'content'},
     'core.landingslide': {'title', 'content'},

@@ -27,19 +27,30 @@
     </form>
 </div>
 
-<div class="card" x-data="{}">
+<div class="card" x-data="{ codeFor: null, codeValue: '', codeError: '', challenge: '' }">
     <h3>Dopisy</h3>
+    <p class="teaser">Zaškrtni dopisy, které jsi už fyzicky otevřela. Dopisy s klíčkem &#128273; mají uvnitř kód &mdash; zadej ho tady a odemkne se ti online výzva.</p>
     <div class="letter-grid">
     {% for letter in letters %}
         {% if letter.unlocked %}
-            <div class="letter-tile {% if letter.letter_state.opened %}opened{% endif %} {% if letter.is_big %}big{% endif %}"
-                 x-data="{opened: {{ letter.letter_state.opened|yesno:'true,false' }} }"
-                 @click="
-                    fetch('{% url 'jar_toggle' letter.number %}', {method:'POST', headers:{'X-CSRFToken': '{{ csrf_token }}'}})
-                    .then(r => r.json())
-                    .then(data => { if (data.ok) { opened = data.opened; $el.classList.toggle('opened', opened); if (opened) fireConfetti(); } });
-                 ">
-                {{ letter.number }}
+            <div class="letter-tile-wrap">
+                <div class="letter-tile {% if letter.letter_state.opened %}opened{% endif %} {% if letter.is_big %}big{% endif %}"
+                     x-data="{opened: {{ letter.letter_state.opened|yesno:'true,false' }} }"
+                     @click="
+                        fetch('{% url 'jar_toggle' letter.number %}', {method:'POST', headers:{'X-CSRFToken': '{{ csrf_token }}'}})
+                        .then(r => r.json())
+                        .then(data => { if (data.ok) { opened = data.opened; $el.classList.toggle('opened', opened); if (opened) fireConfetti(); } });
+                     ">
+                    {{ letter.number }}
+                </div>
+                {% if letter.has_code %}
+                    {% if letter.letter_state.code_unlocked %}
+                        <span class="letter-key-badge letter-key-badge--done" title="Kód zadán">&#11088;</span>
+                    {% else %}
+                        <button type="button" class="letter-key-badge" title="Zadat kód z dopisu"
+                                @click="codeFor = {{ letter.number }}; codeValue = ''; codeError = ''; challenge = '';">&#128273;</button>
+                    {% endif %}
+                {% endif %}
             </div>
         {% elif builder_mode %}
             <a class="letter-tile locked builder-preview" href="{% url 'letter_detail' letter.number %}" title="Náhled &mdash; upravit text dopisu">{{ letter.number }}</a>
@@ -47,6 +58,34 @@
             <div class="letter-tile locked" title="Uzamčeno">{{ letter.number }}</div>
         {% endif %}
     {% endfor %}
+    </div>
+
+    <div class="card capsule-date-fields" style="flex-direction:column;margin-top:1rem;" x-show="codeFor" x-cloak>
+        <template x-if="!challenge">
+            <div>
+                <label>Kód z dopisu č. <span x-text="codeFor"></span></label>
+                <input type="text" x-model="codeValue" placeholder="Zadej kód">
+                <p class="message error" x-show="codeError" x-text="codeError" style="margin-top:0.5rem;"></p>
+                <div style="display:flex;gap:0.5rem;margin-top:0.75rem;">
+                    <button type="button" class="btn" @click="
+                        fetch('/jar/redeem-letter/' + codeFor + '/', {method:'POST', headers:{'X-CSRFToken': '{{ csrf_token }}', 'Content-Type': 'application/x-www-form-urlencoded'}, body: 'code=' + encodeURIComponent(codeValue)})
+                        .then(r => r.json().then(data => ({status: r.status, data: data})))
+                        .then(({status, data}) => {
+                            if (data.ok) { challenge = data.challenge_content || 'Odemčeno! ✨'; fireConfetti(); }
+                            else { codeError = 'Tenhle kód nesedí, zkus to znovu.'; }
+                        });
+                    ">Odemknout</button>
+                    <button type="button" class="btn" style="background:none;color:var(--plum-soft);box-shadow:none;" @click="codeFor = null">Zavřít</button>
+                </div>
+            </div>
+        </template>
+        <template x-if="challenge">
+            <div>
+                <h3>&#127881; Odemčeno!</h3>
+                <p x-text="challenge"></p>
+                <button type="button" class="btn" @click="codeFor = null">Zavřít</button>
+            </div>
+        </template>
     </div>
 </div>
 {% endblock %}

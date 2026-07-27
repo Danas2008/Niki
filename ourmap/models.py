@@ -10,12 +10,14 @@ class MapPin(models.Model):
     ]
 
     title = models.CharField(max_length=200)
-    lat = models.FloatField()
-    lng = models.FloatField()
     kind = models.CharField(max_length=20, choices=KIND_CHOICES)
     description = models.TextField(blank=True)
-    unlock_at = models.DateTimeField(null=True, blank=True)
-    icon = models.CharField(max_length=50, blank=True)
+    unlock_at = models.DateTimeField(
+        "Datum na cestě",
+        null=True,
+        blank=True,
+        help_text="Určuje pořadí bodu na cestě a datum, které se u něj zobrazí. Celá cesta je vždy viditelná.",
+    )
 
     class Meta:
         ordering = ["id"]

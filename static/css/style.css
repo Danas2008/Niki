@@ -728,6 +728,7 @@ input[type=file] {
 }
 
 .birthday-letter {
+    width: 100%;
     text-align: center;
     margin-top: -1rem;
     background: linear-gradient(135deg, var(--ivory) 0%, var(--blush) 170%);
@@ -754,8 +755,13 @@ input[type=file] {
 }
 
 .landing-tap-envelope {
-    cursor: pointer;
+    display: block;
+    margin: 0 auto;
     padding: 0;
+    border: none;
+    outline: none;
+    font: inherit;
+    cursor: pointer;
     animation: birthday-pulse 2.2s ease-in-out infinite;
 }
 .landing-tap-envelope:hover { transform: scale(1.03); }
@@ -763,6 +769,7 @@ input[type=file] {
 
 .landing-tap-label {
     display: block;
+    width: 100%;
     text-align: center;
     margin: 1.25rem auto 0;
     font-family: 'Cormorant Garamond', serif;

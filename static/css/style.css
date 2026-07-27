@@ -785,17 +785,23 @@ input[type=file] {
     margin-bottom: 0.6rem;
 }
 
+@keyframes envelope-pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
 .landing-tap-envelope {
     padding: 0;
     outline: none;
     font: inherit;
     cursor: pointer;
-    animation: birthday-pulse 2.2s ease-in-out infinite;
+    animation: envelope-pulse 2.2s ease-in-out infinite;
 }
-.landing-tap-envelope:hover { transform: scale(1.03); }
+.landing-tap-envelope:hover { transform: scale(1.08); }
 .birthday-letter .btn { margin-top: 1rem; }
 
 .landing-tap-label {
+    text-align: center;
     margin: 1.25rem 0 0;
     font-family: 'Cormorant Garamond', serif;
     font-style: italic;

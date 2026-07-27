@@ -442,6 +442,14 @@ input[type=file] {
 .letter-tile.opened { background: linear-gradient(135deg, var(--rose), var(--rose-deep)); color: #fff; border-color: var(--rose-deep); }
 .letter-tile.locked { opacity: 0.4; cursor: not-allowed; box-shadow: none; }
 .letter-tile.locked:hover { transform: none; }
+.letter-tile.locked.builder-preview {
+    opacity: 1;
+    cursor: pointer;
+    border-style: dashed;
+    border-color: rgba(201,162,75,0.5);
+    color: var(--gold);
+}
+.letter-tile.locked.builder-preview:hover { transform: translateY(-3px) scale(1.04); box-shadow: var(--shadow-md); }
 .letter-tile.big { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(201,162,75,0.18); }
 
 .countdown-big {
@@ -683,12 +691,11 @@ input[type=file] {
 .birthday-reveal {
     max-width: 480px;
     margin: 6vh auto 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    text-align: center;
 }
 
 .birthday-envelope {
+    display: inline-block;
     width: 9rem;
     height: 6.5rem;
     position: relative;
@@ -755,10 +762,7 @@ input[type=file] {
 }
 
 .landing-tap-envelope {
-    display: block;
-    margin: 0 auto;
     padding: 0;
-    border: none;
     outline: none;
     font: inherit;
     cursor: pointer;
@@ -768,10 +772,7 @@ input[type=file] {
 .birthday-letter .btn { margin-top: 1rem; }
 
 .landing-tap-label {
-    display: block;
-    width: 100%;
-    text-align: center;
-    margin: 1.25rem auto 0;
+    margin: 1.25rem 0 0;
     font-family: 'Cormorant Garamond', serif;
     font-style: italic;
     font-weight: 700;

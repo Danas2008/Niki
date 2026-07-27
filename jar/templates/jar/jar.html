@@ -3,6 +3,10 @@
 {% block content %}
 <h1>Love Jar</h1>
 
+{% if builder_mode and not jar_section_unlocked %}
+<p class="unlock-date">&#128274; Sklenice je pro Niki zamčená do 15. srpna 2026 &mdash; tohle je jen náhled pro tebe.</p>
+{% endif %}
+
 <div class="card">
     <h3>Postup: {{ opened_count }} / {{ total }}</h3>
     <div class="progress-bar-outer">
@@ -37,6 +41,8 @@
                  ">
                 {{ letter.number }}
             </div>
+        {% elif builder_mode %}
+            <a class="letter-tile locked builder-preview" href="{% url 'letter_detail' letter.number %}" title="Náhled &mdash; upravit text dopisu">{{ letter.number }}</a>
         {% else %}
             <div class="letter-tile locked" title="Uzamčeno">{{ letter.number }}</div>
         {% endif %}

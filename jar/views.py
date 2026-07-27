@@ -36,7 +36,9 @@ def _compute_streak(opened_dates):
 
 @login_required
 def jar_view(request):
-    if not _departure_unlocked():
+    builder_preview = request.user.is_staff and request.session.get("builder_mode", False)
+    departure_unlocked = _departure_unlocked()
+    if not departure_unlocked and not builder_preview:
         return render(request, "jar/locked.html")
 
     letters = list(Letter.objects.select_related("state").order_by("number"))
@@ -67,6 +69,7 @@ def jar_view(request):
         "percent": percent,
         "streak": streak,
         "celebrate": celebrate,
+        "jar_section_unlocked": departure_unlocked,
     }
     return render(request, "jar/jar.html", context)
 

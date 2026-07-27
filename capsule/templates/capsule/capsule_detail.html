@@ -7,17 +7,21 @@
     <div class="card">
         <p data-edit="capsule.timecapsule:{{ capsule.id }}:body" data-edit-multiline="true">{{ capsule.body }}</p>
     </div>
+    <a class="btn" href="{% url 'capsule' %}">Zpět na kapsle</a>
 {% else %}
-    <h1>{{ capsule.title }}</h1>
-    <div class="card">
-        {{ capsule.body|linebreaks }}
-    </div>
-{% endif %}
-<a class="btn" href="{% url 'capsule' %}">Zpět na kapsle</a>
-{% endblock %}
+    <div x-data="{ opened: false }">
+        <div class="birthday-reveal" x-show="!opened">
+            <button type="button" class="birthday-envelope landing-tap-envelope" @click="opened = true{% if first_open %}; fireConfetti(){% endif %}" aria-label="Otevřít kapsli">
+                <span class="envelope-seal birthday-seal">&#10084;</span>
+            </button>
+            <p class="landing-tap-label">Klepni a otevři kapsli</p>
+        </div>
 
-{% block extra_scripts %}
-{% if first_open %}
-<script>document.addEventListener('DOMContentLoaded', () => fireConfetti());</script>
+        <div class="card birthday-letter" x-show="opened" x-transition:enter.duration.700ms x-cloak>
+            <h1>{{ capsule.title }}</h1>
+            {{ capsule.body|linebreaks }}
+            <a class="btn" href="{% url 'capsule' %}">Zpět na kapsle</a>
+        </div>
+    </div>
 {% endif %}
 {% endblock %}

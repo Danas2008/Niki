@@ -11,24 +11,18 @@
             <span class="path-dot path-dot--{{ entry.pin.kind }}"></span>
             {% if not forloop.last %}<span class="path-line"></span>{% endif %}
         </div>
-        {% if entry.unlocked or builder_mode %}
-            <div class="card path-card">
-                <div class="timeline-kind">{{ entry.kind_icon|safe }} <span>{{ entry.kind_label }}</span></div>
-                {% if builder_mode %}
-                    <h3 data-edit="ourmap.mappin:{{ entry.pin.id }}:title">{{ entry.pin.title }}</h3>
-                    <p data-edit="ourmap.mappin:{{ entry.pin.id }}:description" data-edit-multiline="true">{{ entry.pin.description }}</p>
-                    <p class="unlock-date">{% if not entry.unlocked %}&#128274; Zamčeno do {% endif %}{{ entry.pin.unlock_at|date:"j. E Y" }}</p>
-                {% else %}
-                    <h3>{{ entry.pin.title }}</h3>
-                    {% if entry.pin.description %}<p>{{ entry.pin.description }}</p>{% endif %}
-                    {% if entry.pin.unlock_at %}<p class="unlock-date">{{ entry.pin.unlock_at|date:"j. E Y" }}</p>{% endif %}
-                {% endif %}
-            </div>
-        {% else %}
-            <div class="path-card">
-                {% include "_locked_card.html" with teaser="Tenhle bod cesty ještě čeká na svůj čas..." unlock_date=entry.pin.unlock_at %}
-            </div>
-        {% endif %}
+        <div class="card path-card">
+            <div class="timeline-kind">{{ entry.kind_icon|safe }} <span>{{ entry.kind_label }}</span></div>
+            {% if builder_mode %}
+                <h3 data-edit="ourmap.mappin:{{ entry.pin.id }}:title">{{ entry.pin.title }}</h3>
+                <p data-edit="ourmap.mappin:{{ entry.pin.id }}:description" data-edit-multiline="true">{{ entry.pin.description }}</p>
+                {% if entry.pin.unlock_at %}<p class="unlock-date">{{ entry.pin.unlock_at|date:"j. E Y" }}</p>{% endif %}
+            {% else %}
+                <h3>{{ entry.pin.title }}</h3>
+                {% if entry.pin.description %}<p>{{ entry.pin.description }}</p>{% endif %}
+                {% if entry.pin.unlock_at %}<p class="unlock-date">{{ entry.pin.unlock_at|date:"j. E Y" }}</p>{% endif %}
+            {% endif %}
+        </div>
     </div>
 {% empty %}
     <p class="teaser">Zatím tu nejsou žádné body cesty.</p>

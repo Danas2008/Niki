@@ -1,8 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
-from core.unlock import is_unlocked
-
 from .models import MapPin
 
 KIND_LABELS = {
@@ -22,14 +20,16 @@ KIND_ICONS = {
 
 @login_required
 def map_view(request):
+    # The relationship path is always fully visible -- past, present, and
+    # future points alike -- unlike the rest of the site's date-locked
+    # surprises.
     pins = MapPin.objects.all().order_by("unlock_at", "id")
-    entries = []
-    for pin in pins:
-        unlocked = is_unlocked(pin)
-        entries.append({
+    entries = [
+        {
             "pin": pin,
-            "unlocked": unlocked,
             "kind_label": KIND_LABELS.get(pin.kind, pin.kind),
             "kind_icon": KIND_ICONS.get(pin.kind, "&#128204;"),
-        })
+        }
+        for pin in pins
+    ]
     return render(request, "ourmap/map.html", {"entries": entries})

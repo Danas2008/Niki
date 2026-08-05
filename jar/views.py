@@ -1,13 +1,16 @@
-from datetime import timedelta
+import json
+from datetime import datetime, timedelta
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.hashers import check_password, make_password
+from django.contrib.auth.decorators import user_passes_test
 from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 
-from core.unlock import is_unlocked
 from journey.models import Chapter
 
 from .models import Letter, LetterState, UnlockCode
@@ -18,6 +21,10 @@ def _departure_unlocked():
     if chapter is None:
         return False
     return chapter.is_unlocked()
+
+
+def _is_daniel(user):
+    return user.is_authenticated and user.is_staff and user.username == "daniel"
 
 
 def _compute_streak(opened_dates):
@@ -34,6 +41,25 @@ def _compute_streak(opened_dates):
     return streak
 
 
+def _letter_session_key(letter):
+    return f"virtual_letter_{letter.pk}_unlocked"
+
+
+def _letter_available(letter, builder_preview=False):
+    return builder_preview or letter.is_available()
+
+
+def _hydrate_letter(letter, builder_preview=False):
+    letter.unlocked = _letter_available(letter, builder_preview)
+    letter.availability = letter.availability_label()
+    letter.is_today = letter.is_mandatory and letter.unlock_date == timezone.localdate()
+    try:
+        letter.letter_state = letter.state
+    except LetterState.DoesNotExist:
+        letter.letter_state = None
+    return letter
+
+
 @login_required
 def jar_view(request):
     builder_preview = request.user.is_staff and request.session.get("builder_mode", False)
@@ -43,11 +69,7 @@ def jar_view(request):
 
     letters = list(Letter.objects.select_related("state").order_by("number"))
     for letter in letters:
-        letter.unlocked = is_unlocked(letter)
-        try:
-            letter.letter_state = letter.state
-        except LetterState.DoesNotExist:
-            letter.letter_state = None
+        _hydrate_letter(letter, builder_preview)
 
     opened_count = LetterState.objects.filter(opened=True).count()
     total = letters[-1].number if letters else 0
@@ -81,7 +103,7 @@ def toggle_letter(request, number):
         raise Http404
 
     letter = get_object_or_404(Letter, number=number)
-    if not is_unlocked(letter):
+    if not letter.is_available():
         return JsonResponse({"ok": False, "error": "locked"}, status=403)
 
     state, _ = LetterState.objects.get_or_create(letter=letter)
@@ -96,7 +118,7 @@ def toggle_letter(request, number):
 @require_POST
 def redeem_letter_code(request, number):
     letter = get_object_or_404(Letter, number=number)
-    if not letter.has_code or not is_unlocked(letter):
+    if not letter.has_code or not letter.is_available():
         return JsonResponse({"ok": False, "error": "not applicable"}, status=400)
 
     code_value = request.POST.get("code", "").strip()
@@ -115,16 +137,65 @@ def redeem_letter_code(request, number):
 @login_required
 def letter_detail(request, number):
     letter = get_object_or_404(Letter, number=number)
-    unlocked = is_unlocked(letter)
     builder_preview = request.user.is_staff and request.session.get("builder_mode", False)
+    unlocked = _letter_available(letter, builder_preview)
     if not unlocked and not builder_preview:
         raise Http404
 
     state, _ = LetterState.objects.get_or_create(letter=letter)
+    virtual_unlocked = (
+        builder_preview
+        or not letter.is_virtual
+        or request.session.get(_letter_session_key(letter), False)
+        or state.code_unlocked
+    )
+    if letter.is_virtual and not virtual_unlocked:
+        return redirect("letter_virtual_unlock", number=letter.number)
+
     return render(request, "jar/letter_detail.html", {
         "letter": letter,
         "letter_unlocked": unlocked,
         "letter_state": state,
+        "virtual_unlocked": virtual_unlocked,
+    })
+
+
+@login_required
+def letter_virtual_unlock(request, number):
+    letter = get_object_or_404(Letter, number=number, is_virtual=True)
+    builder_preview = request.user.is_staff and request.session.get("builder_mode", False)
+    if not _letter_available(letter, builder_preview):
+        raise Http404
+
+    code_value = request.GET.get("code", "") or request.POST.get("code", "")
+    code_is_valid = bool(
+        letter.unlock_code
+        and code_value
+        and code_value.strip().lower() == letter.unlock_code.strip().lower()
+    )
+
+    if request.method == "POST":
+        if not code_is_valid:
+            messages.error(request, "Tenhle kód k tomuhle dopisu nesedí.")
+        elif not letter.virtual_password:
+            messages.error(request, "Online dopis ještě nemá nastavené heslo.")
+        elif check_password(request.POST.get("password", ""), letter.virtual_password):
+            state, _ = LetterState.objects.get_or_create(letter=letter)
+            state.code_unlocked = True
+            state.code_unlocked_at = state.code_unlocked_at or timezone.now()
+            state.opened = True
+            state.opened_at = state.opened_at or timezone.now()
+            state.save()
+            request.session[_letter_session_key(letter)] = True
+            request.session["fire_confetti"] = True
+            return redirect("letter_detail", number=letter.number)
+        else:
+            messages.error(request, "Heslo nesedí, zkus to znovu.")
+
+    return render(request, "jar/virtual_unlock.html", {
+        "letter": letter,
+        "code_value": code_value,
+        "code_is_valid": code_is_valid,
     })
 
 
@@ -132,6 +203,13 @@ def letter_detail(request, number):
 @require_POST
 def redeem_code(request):
     code_value = request.POST.get("code", "").strip()
+    virtual_letter = Letter.objects.filter(is_virtual=True, unlock_code__iexact=code_value).first()
+    if virtual_letter:
+        if not virtual_letter.is_available():
+            messages.error(request, f"Dopis #{virtual_letter.number} se odemkne {virtual_letter.unlock_date:%d.%m.%Y}.")
+            return redirect("jar")
+        return redirect(f"{reverse('letter_virtual_unlock', kwargs={'number': virtual_letter.number})}?code={code_value}")
+
     unlock_code = UnlockCode.objects.filter(code__iexact=code_value).first()
 
     if not unlock_code:
@@ -152,3 +230,61 @@ def redeem_code(request):
     messages.success(request, f"Odemčeno: {unlock_code.label}!")
     request.session["fire_confetti"] = True
     return redirect("jar")
+
+
+@user_passes_test(_is_daniel)
+def jar_builder(request):
+    letters = list(Letter.objects.select_related("state").order_by("number"))
+    for letter in letters:
+        _hydrate_letter(letter, builder_preview=True)
+        letter.password_set = bool(letter.virtual_password)
+    return render(request, "jar/builder.html", {"letters": letters})
+
+
+@user_passes_test(_is_daniel)
+@require_POST
+def jar_builder_save(request):
+    try:
+        payload = json.loads(request.body)
+        letter = Letter.objects.get(pk=payload["id"])
+        field = payload["field"]
+        value = payload.get("value", "")
+    except (json.JSONDecodeError, KeyError, Letter.DoesNotExist):
+        return JsonResponse({"ok": False, "error": "bad request"}, status=400)
+
+    editable = {
+        "category",
+        "notes",
+        "unlock_date",
+        "is_mandatory",
+        "is_virtual",
+        "unlock_code",
+        "virtual_content",
+    }
+    if field == "virtual_password":
+        if value:
+            letter.virtual_password = make_password(value)
+            letter.save(update_fields=["virtual_password"])
+        return JsonResponse({"ok": True, "password_set": bool(letter.virtual_password)})
+    if field not in editable:
+        return JsonResponse({"ok": False, "error": "field not editable"}, status=403)
+
+    if field in {"is_mandatory", "is_virtual"}:
+        value = str(value).lower() in {"1", "true", "yes", "on"}
+        setattr(letter, field, value)
+        if field == "is_virtual" and value:
+            letter.has_code = True
+            letter.save(update_fields=[field, "has_code"])
+        else:
+            letter.save(update_fields=[field])
+        return JsonResponse({"ok": True})
+
+    if field == "unlock_date":
+        try:
+            value = datetime.strptime(value, "%Y-%m-%d").date()
+        except ValueError:
+            return JsonResponse({"ok": False, "error": "bad date"}, status=400)
+
+    setattr(letter, field, value)
+    letter.save(update_fields=[field])
+    return JsonResponse({"ok": True})

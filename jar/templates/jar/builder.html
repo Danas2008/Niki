@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% block title %}Love Jar Builder{% endblock %}
+{% block content %}
+<h1>Love Jar Builder</h1>
+
+<div class="card builder-jar-toolbar">
+    <p class="teaser">127 dopisů, inline editace. Heslo se po uložení zahashuje a už se tu nezobrazí.</p>
+    <a class="btn" href="{% url 'jar' %}">Zpět ke sklenici</a>
+</div>
+
+<div class="builder-jar-table-wrap">
+    <table class="builder-jar-table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Kategorie</th>
+                <th>Status</th>
+                <th>Unlock date</th>
+                <th>Virtual</th>
+                <th>Virtual password</th>
+                <th>Code</th>
+                <th>Notes</th>
+                <th>Content</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for letter in letters %}
+            <tr>
+                <td><strong>{{ letter.number }}</strong></td>
+                <td><input data-jar-id="{{ letter.id }}" data-jar-field="category" type="text" value="{{ letter.category }}"></td>
+                <td>
+                    <select data-jar-id="{{ letter.id }}" data-jar-field="is_mandatory">
+                        <option value="false" {% if not letter.is_mandatory %}selected{% endif %}>Free-choice</option>
+                        <option value="true" {% if letter.is_mandatory %}selected{% endif %}>Mandatory</option>
+                    </select>
+                </td>
+                <td><input data-jar-id="{{ letter.id }}" data-jar-field="unlock_date" type="date" value="{{ letter.unlock_date|date:'Y-m-d' }}"></td>
+                <td>
+                    <select data-jar-id="{{ letter.id }}" data-jar-field="is_virtual">
+                        <option value="false" {% if not letter.is_virtual %}selected{% endif %}>No</option>
+                        <option value="true" {% if letter.is_virtual %}selected{% endif %}>Yes</option>
+                    </select>
+                </td>
+                <td>
+                    <input data-jar-id="{{ letter.id }}" data-jar-field="virtual_password" type="password" placeholder="{% if letter.password_set %}Password set{% else %}Set password{% endif %}">
+                </td>
+                <td><input data-jar-id="{{ letter.id }}" data-jar-field="unlock_code" type="text" value="{{ letter.unlock_code }}"></td>
+                <td><textarea data-jar-id="{{ letter.id }}" data-jar-field="notes">{{ letter.notes }}</textarea></td>
+                <td>
+                    <details>
+                        <summary>Edit</summary>
+                        <textarea data-jar-id="{{ letter.id }}" data-jar-field="virtual_content" class="builder-jar-content">{{ letter.virtual_content }}</textarea>
+                    </details>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+(function () {
+    function getCookie(name) {
+        const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+        return match ? decodeURIComponent(match[2]) : null;
+    }
+
+    document.querySelectorAll('[data-jar-field]').forEach(function (field) {
+        var original = field.value;
+        function save() {
+            if (field.value === original && field.dataset.jarField !== 'virtual_password') return;
+            if (field.dataset.jarField === 'virtual_password' && !field.value) return;
+
+            fetch("{% url 'jar_builder_save' %}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": getCookie("csrftoken")
+                },
+                body: JSON.stringify({
+                    id: field.dataset.jarId,
+                    field: field.dataset.jarField,
+                    value: field.value
+                })
+            })
+            .then(function (res) { return res.json().then(function (data) { return { ok: res.ok, data: data }; }); })
+            .then(function (result) {
+                if (!result.ok || !result.data.ok) throw new Error(result.data.error || "save failed");
+                original = field.dataset.jarField === 'virtual_password' ? '' : field.value;
+                if (field.dataset.jarField === 'virtual_password') {
+                    field.value = '';
+                    field.placeholder = 'Password set';
+                }
+                field.classList.add('builder-saved');
+                setTimeout(function () { field.classList.remove('builder-saved'); }, 900);
+            })
+            .catch(function () {
+                field.classList.add('builder-error');
+                if (field.dataset.jarField !== 'virtual_password') field.value = original;
+                setTimeout(function () { field.classList.remove('builder-error'); }, 1400);
+            });
+        }
+
+        field.addEventListener('change', save);
+        field.addEventListener('blur', save);
+    });
+})();
+</script>
+{% endblock %}

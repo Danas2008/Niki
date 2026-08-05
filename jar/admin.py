@@ -5,9 +5,9 @@ from .models import Letter, LetterState, UnlockCode
 
 @admin.register(Letter)
 class LetterAdmin(admin.ModelAdmin):
-    list_display = ("number", "available_at", "is_big", "has_code")
-    list_filter = ("is_big", "has_code")
-    search_fields = ("number", "web_content")
+    list_display = ("number", "category", "unlock_date", "is_mandatory", "is_virtual", "is_big", "has_code")
+    list_filter = ("is_mandatory", "is_virtual", "is_big", "has_code", "unlock_date")
+    search_fields = ("number", "category", "web_content", "virtual_content", "unlock_code", "notes")
     ordering = ("number",)
 
 

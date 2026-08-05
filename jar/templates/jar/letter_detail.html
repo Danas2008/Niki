@@ -1,27 +1,40 @@
 {% extends "base.html" %}
 {% block title %}Dopis č. {{ letter.number }}{% endblock %}
 {% block content %}
-<h1>Dopis č. {{ letter.number }} {% if letter.is_big %}&#9733;{% endif %}</h1>
+<h1>Dopis č. {{ letter.number }} {% if letter.is_big %}★{% endif %} {% if letter.is_virtual %}🔑{% endif %}</h1>
+
 {% if builder_mode %}
-    {% if not letter_unlocked %}<p class="unlock-date">&#128274; Zamčeno do {{ letter.available_at|date:"j. E Y" }} &mdash; toto je náhled</p>{% endif %}
+    {% if not letter_unlocked %}<p class="unlock-date">🔒 Zamčeno do {{ letter.unlock_date|date:"j. E Y" }} - toto je náhled</p>{% endif %}
     <div class="card">
         <p data-edit="jar.letter:{{ letter.id }}:web_content" data-edit-multiline="true">{{ letter.web_content }}</p>
     </div>
-    {% if letter.has_code %}
+    {% if letter.is_virtual %}
     <div class="card">
-        <h3>&#128273; Online výzva (po zadání kódu z dopisu)</h3>
+        <h3>🔑 Virtuální dopis</h3>
+        <p data-edit="jar.letter:{{ letter.id }}:virtual_content" data-edit-multiline="true">{{ letter.virtual_content }}</p>
+        <p class="teaser">Kód z obálky: {{ letter.unlock_code|default:"(zatím nenastaven)" }}</p>
+    </div>
+    {% elif letter.has_code %}
+    <div class="card">
+        <h3>🔑 Online výzva</h3>
         <p data-edit="jar.letter:{{ letter.id }}:challenge_content" data-edit-multiline="true">{{ letter.challenge_content }}</p>
         <p class="teaser">Kód z dopisu: {{ letter.unlock_code|default:"(zatím nenastaven)" }}</p>
     </div>
     {% endif %}
 {% else %}
+    {% if letter.web_content %}
     <div class="card">
         {{ letter.web_content|linebreaks }}
     </div>
-    {% if letter.has_code %}
+    {% endif %}
+    {% if letter.is_virtual %}
+        <div class="card">
+            {{ letter.virtual_content|linebreaks }}
+        </div>
+    {% elif letter.has_code %}
         <div class="card">
             {% if letter_state.code_unlocked %}
-                <h3>&#127881; Odemčeno</h3>
+                <h3>🎉 Odemčeno</h3>
                 {{ letter.challenge_content|linebreaks }}
             {% else %}
                 <p class="teaser">Tenhle dopis obsahuje kód. Zadej ho na hlavní stránce sklenice a odemkni si online výzvu.</p>
@@ -29,5 +42,6 @@
         </div>
     {% endif %}
 {% endif %}
+
 <a class="btn" href="{% url 'jar' %}">Zpět ke sklenici</a>
 {% endblock %}

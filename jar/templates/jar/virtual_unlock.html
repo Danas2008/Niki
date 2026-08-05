@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Odemknout dopis č. {{ letter.number }}{% endblock %}
+{% block content %}
+<h1>Dopis č. {{ letter.number }} 🔑</h1>
+
+<div class="card">
+    <h3>Online obsah</h3>
+    <p class="teaser">Tenhle kód patří k virtuálnímu dopisu. Zadej heslo z obálky a otevře se na samostatné stránce.</p>
+    <form method="post">
+        {% csrf_token %}
+        <label>Kód z obálky</label>
+        <input type="text" name="code" value="{{ code_value }}" placeholder="Např. N-98013">
+        <label>Heslo</label>
+        <input type="password" name="password" placeholder="Heslo k virtuálnímu dopisu">
+        <button class="btn" type="submit">Odemknout dopis</button>
+    </form>
+</div>
+
+<a class="btn" href="{% url 'jar' %}">Zpět ke sklenici</a>
+{% endblock %}

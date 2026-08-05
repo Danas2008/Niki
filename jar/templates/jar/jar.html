@@ -4,17 +4,17 @@
 <h1>Love Jar</h1>
 
 {% if builder_mode and not jar_section_unlocked %}
-<p class="unlock-date">&#128274; Sklenice je pro Niki zamčená do 15. srpna 2026 &mdash; tohle je jen náhled pro tebe.</p>
+<p class="unlock-date">🔒 Sklenice je pro Niki zamčená do 15. srpna 2026 - tohle je jen náhled pro tebe.</p>
 {% endif %}
 
-<div class="card">
+<div class="card" x-data="{ codeFor: null, codeValue: '', codeError: '', challenge: '' }">
     <h3>Postup: {{ opened_count }} / {{ total }}</h3>
     <div class="progress-bar-outer">
         <div class="progress-bar-inner" style="width: {{ percent }}%;"></div>
     </div>
-    <p>Šňůra: {{ streak }} den{{ streak|pluralize:"den,dny,dní" }} v kuse &#128293;</p>
+    <p>Šňůra: {{ streak }} den{{ streak|pluralize:"den,dny,dní" }} v kuse 🔥</p>
     {% if celebrate %}
-        <p class="message success">{{ opened_count }} otevřených dopisů! Máme co slavit. &#127881;</p>
+        <p class="message success">{{ opened_count }} otevřených dopisů! Máme co slavit. 🎉</p>
     {% endif %}
 </div>
 
@@ -27,35 +27,57 @@
     </form>
 </div>
 
-<div class="card" x-data="{ codeFor: null, codeValue: '', codeError: '', challenge: '' }">
+<div class="card">
     <h3>Dopisy</h3>
-    <p class="teaser">Zaškrtni dopisy, které jsi už fyzicky otevřela. Dopisy s klíčkem &#128273; mají uvnitř kód &mdash; zadej ho tady a odemkne se ti online výzva.</p>
+    <p class="teaser">Vyber dostupný dopis. 🔒 čeká na datum, 🔑 má online obsah, ✅ už je otevřený.</p>
     <div class="letter-grid">
     {% for letter in letters %}
         {% if letter.unlocked %}
             <div class="letter-tile-wrap">
-                <div class="letter-tile {% if letter.letter_state.opened %}opened{% endif %} {% if letter.is_big %}big{% endif %}"
-                     x-data="{opened: {{ letter.letter_state.opened|yesno:'true,false' }} }"
-                     @click="
-                        fetch('{% url 'jar_toggle' letter.number %}', {method:'POST', headers:{'X-CSRFToken': '{{ csrf_token }}'}})
-                        .then(r => r.json())
-                        .then(data => { if (data.ok) { opened = data.opened; $el.classList.toggle('opened', opened); if (opened) fireConfetti(); } });
-                     ">
-                    {{ letter.number }}
-                </div>
-                {% if letter.has_code %}
+                {% if letter.is_virtual %}
+                    <a class="letter-tile letter-tile-link {% if letter.letter_state.opened %}opened{% endif %} {% if letter.is_big %}big{% endif %} {% if letter.is_today %}today{% endif %}"
+                       href="{% url 'letter_detail' letter.number %}"
+                       title="{% if letter.is_today %}Today's letter!{% else %}{{ letter.category|default:'Dopis' }}{% endif %}">
+                        <span>{{ letter.number }}</span>
+                        <small>🔑</small>
+                    </a>
+                {% else %}
+                    <button class="letter-tile {% if letter.letter_state.opened %}opened{% endif %} {% if letter.is_big %}big{% endif %} {% if letter.is_today %}today{% endif %}"
+                            type="button"
+                            x-data="{opened: {{ letter.letter_state.opened|yesno:'true,false' }} }"
+                            @click="
+                                fetch('{% url 'jar_toggle' letter.number %}', {method:'POST', headers:{'X-CSRFToken': '{{ csrf_token }}'}})
+                                .then(r => r.json())
+                                .then(data => { if (data.ok) { opened = data.opened; $el.classList.toggle('opened', opened); if (opened) fireConfetti(); } });
+                            "
+                            title="{% if letter.is_today %}Today's letter!{% else %}{{ letter.category|default:'Dopis' }}{% endif %}">
+                        <span>{{ letter.number }}</span>
+                    </button>
+                {% endif %}
+                {% if letter.letter_state.opened %}
+                    <span class="letter-status-badge letter-status-badge--done" title="Otevřeno">✅</span>
+                {% elif letter.is_virtual %}
+                    <span class="letter-status-badge" title="Má online obsah">🔑</span>
+                {% elif letter.has_code %}
                     {% if letter.letter_state.code_unlocked %}
-                        <span class="letter-key-badge letter-key-badge--done" title="Kód zadán">&#11088;</span>
+                        <span class="letter-status-badge letter-status-badge--done" title="Kód zadán">⭐</span>
                     {% else %}
-                        <button type="button" class="letter-key-badge" title="Zadat kód z dopisu"
-                                @click="codeFor = {{ letter.number }}; codeValue = ''; codeError = ''; challenge = '';">&#128273;</button>
+                        <button type="button" class="letter-status-badge" title="Zadat kód z dopisu"
+                                @click.stop="codeFor = {{ letter.number }}; codeValue = ''; codeError = ''; challenge = '';">🔑</button>
                     {% endif %}
+                {% endif %}
+                {% if letter.is_today %}
+                    <span class="letter-today-label">Dnes</span>
                 {% endif %}
             </div>
         {% elif builder_mode %}
-            <a class="letter-tile locked builder-preview" href="{% url 'letter_detail' letter.number %}" title="Náhled &mdash; upravit text dopisu">{{ letter.number }}</a>
+            <a class="letter-tile locked builder-preview" href="{% url 'letter_detail' letter.number %}" title="{{ letter.availability }}">{{ letter.number }}</a>
         {% else %}
-            <div class="letter-tile locked" title="Uzamčeno">{{ letter.number }}</div>
+            <div class="letter-tile locked" title="{{ letter.availability }}">
+                <span>{{ letter.number }}</span>
+                <small>🔒</small>
+            </div>
+            <div class="letter-lock-note">🔐 {{ letter.availability }}</div>
         {% endif %}
     {% endfor %}
     </div>
@@ -71,7 +93,7 @@
                         fetch('/jar/redeem-letter/' + codeFor + '/', {method:'POST', headers:{'X-CSRFToken': '{{ csrf_token }}', 'Content-Type': 'application/x-www-form-urlencoded'}, body: 'code=' + encodeURIComponent(codeValue)})
                         .then(r => r.json().then(data => ({status: r.status, data: data})))
                         .then(({status, data}) => {
-                            if (data.ok) { challenge = data.challenge_content || 'Odemčeno! ✨'; fireConfetti(); }
+                            if (data.ok) { challenge = data.challenge_content || 'Odemčeno!'; fireConfetti(); }
                             else { codeError = 'Tenhle kód nesedí, zkus to znovu.'; }
                         });
                     ">Odemknout</button>
@@ -81,7 +103,7 @@
         </template>
         <template x-if="challenge">
             <div>
-                <h3>&#127881; Odemčeno!</h3>
+                <h3>🎉 Odemčeno!</h3>
                 <p x-text="challenge"></p>
                 <button type="button" class="btn" @click="codeFor = null">Zavřít</button>
             </div>

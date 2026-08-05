@@ -12,7 +12,7 @@
             <div class="capsule-card-icon">{% if capsule.opened %}&#128231;{% else %}&#10084;{% endif %}</div>
             <h3>{{ capsule.title }}</h3>
             {% if capsule.author %}<p class="teaser">Napsal(a) {{ capsule.author.profile.display_name|default:capsule.author.username }}</p>{% endif %}
-            {% if capsule.opened %}<p class="teaser">Otevřeno {{ capsule.opened_at|date:"j. E Y" }}</p>{% else %}<p class="teaser">Připraveno k otevření</p>{% endif %}
+            {% if capsule.opened %}<p class="teaser">Otevřeno{{ capsule.opened_at|date:"j. E Y" }}</p>{% else %}<p class="teaser">Připraveno k otevření</p>{% endif %}
             {% if builder_mode and not capsule.unlocked %}<p class="unlock-date">&#128274; Zamčeno do {{ capsule.unlock_at|date:"j. E Y" }}</p>{% endif %}
         </a>
     {% else %}
